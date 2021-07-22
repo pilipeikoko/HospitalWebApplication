@@ -1,4 +1,6 @@
-﻿@model IEnumerable<Hospital.Models.Patient>
+﻿@model Hospital.Models.SearchPatientsViewModel
+@using PagedList.Core;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="pages/css" />
 
 @{
     ViewData["Title"] = "Index";
@@ -9,57 +11,84 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+<input type="number" asp-for="PageSize" id="PageSize" />
+<input type="number" asp-for="PageNumber" id="PageNumber" />
+
+<form asp-controller="Patients" asp-action="Index" method="get">
+    <p>
+        
+        <input type="submit" value="Filter" />
+    </p>
+</form>
+
+@using (Html.BeginForm("Index", "Patients", FormMethod.Get))
+{
+    <p>
+        Find by name: @Html.TextBox("pageNumber", ViewBag.CurrentFilter as string)
+        <input type="submit" value="Search" />
+    </p>
+}
+
+
+
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.FullName)
+                @Html.DisplayNameFor(model => model.Patients[0].FullName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.PlaceOfResidence)
+                @Html.DisplayNameFor(model => model.Patients[0].PlaceOfResidence)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Birthday)
+                @Html.DisplayNameFor(model => model.Patients[0].Birthday)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DateOfReceipt)
+                @Html.DisplayNameFor(model => model.Patients[0].DateOfReceipt)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DoctrosFullName)
+                @Html.DisplayNameFor(model => model.Patients[0].DoctrosFullName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Colnclusion)
+                @Html.DisplayNameFor(model => model.Patients[0].Colnclusion)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.FullName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PlaceOfResidence)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Birthday)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DateOfReceipt)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DoctrosFullName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Colnclusion)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model.Patients)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FullName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PlaceOfResidence)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Birthday)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DateOfReceipt)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DoctrosFullName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Colnclusion)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+
+<br />
+Page @(Model.PageNumber < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageNumber
+
+
+<pager class="pager-container" list="Model.pagedList" asp-action="Index" asp-controller="Patients" />

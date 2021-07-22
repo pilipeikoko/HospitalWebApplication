@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Hospital.Data;
 using Hospital.Models;
+using PagedList.Core;
 
 namespace Hospital.Controllers
 {
@@ -20,9 +21,14 @@ namespace Hospital.Controllers
         }
 
         // GET: Patients
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int pageNumber = 1,int pageSize = 10)
         {
-            return View(await _context.Patient.ToListAsync());
+            SearchPatientsViewModel searchPatientsVM = new()
+            {
+                pagedList = _context.Patient.ToPagedList(pageNumber,pageSize),
+                Patients = _context.Patient.ToPagedList(pageNumber, pageSize).ToList()
+            };
+            return View(searchPatientsVM);
         }
 
         // GET: Patients/Details/5
